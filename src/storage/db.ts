@@ -50,6 +50,9 @@ export async function writeState(
       const request = store.get("main");
       request.onsuccess = () => {
         try {
+          // Validate any existing value even during a deliberate restore. Corrupt or future
+          // data must be recovered explicitly, never overwritten by a routine save.
+          if (request.result !== undefined) parseState(request.result);
           if (
             expected &&
             request.result !== undefined &&
@@ -67,7 +70,11 @@ export async function writeState(
           conflict =
             error instanceof Error
               ? error
-              : new Error("Could not validate local data");
+              : new Error(
+                  error instanceof DOMException
+                    ? error.message
+                    : "Could not validate local data",
+                );
           tx.abort();
         }
       };

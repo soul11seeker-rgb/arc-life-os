@@ -1,194 +1,114 @@
 # ARC — Every Day Writes Your Story
 
-**ARC Academy 1.0** is a real, offline-first attendance app made with React, TypeScript, Vite, and IndexedDB. It is designed for an iPhone, also works on desktop, and needs no login, paid API, database subscription, or Apple Developer account.
+**ARC 1.1 · Operation Power-Up** adds offline Training and Fuel to the existing React/TypeScript Academy PWA. The black-and-crimson interface, local IndexedDB storage, Academy attendance calculations, subject identities, clinical postings and existing daily habits are preserved.
 
-The interface uses an original angular A, near-black panels, electric crimson, and subtle cyan. It includes no copyrighted superhero characters or logos.
+This is a **feature-branch review**, not a production release. Do not merge or deploy this branch until the owner has reviewed it. The currently installed Academy 1.0 is unaffected by this source branch. No personal records are included in source control.
 
-## What is built
+## Training
 
-- **Today:** date picker, independent Attended / Absent / Cancelled / Not recorded marks, multiple sessions of any subject per day, one-off sessions, study/gym/run-or-football checkboxes, notes, and SAVE DAY.
-- **Attendance:** separate lecture and practical statistics for each subject, configurable targets, warnings, a saved-session register, weekly progress chart, CSV export, and a what-if simulator.
-- **Clinical:** add/edit/rename/archive departments and rotations, with confirmed date ranges, posting weekdays, individual rotation targets, and separate department and rotation percentages. There is no fixed list or application-imposed limit on the number of departments or rotations.
-- **Timetable:** custom weekly classes with effective date ranges. Each slot generates its own session, even when the subject and date are the same.
-- **Holidays and exceptions:** custom date ranges, Christmas/Sankranti breaks when confirmed, college cancellations, and special working days that follow a chosen weekday. Scope rules to all classes, one session type, or one subject/department.
-- **Calendar:** monthly view and editable past records. Open a date, correct it, then save.
-- **REWIND:** previous versions of the last 100 day saves. Undo the latest save for an individual date without touching other dates.
-- **Settings:** academic years, subjects, independent targets, warning margin, basic confirmed exam dates, JSON backups, validated import with a review step, and installation instructions.
-- **Offline PWA:** generated app-shell service worker, installation icons, standalone manifest, safe update prompt, and offline readiness indicator.
-- **Deployment:** a GitHub Actions workflow for free GitHub Pages at `/arc-life-os/`.
+- One-tap completed gym, football, running and recovery/rest logs; optional details and notes.
+- Workout completion checkboxes; optional exercises with their own checkboxes, sets, repetitions and weight.
+- Editable Monday–Sunday goals; sports starts at one day/week. Multiple sessions on one day count once toward a day goal.
+- Monthly active/rest days, completed sessions, recorded minutes and running distance; month selector and activity chart.
+- Edit/delete Training logs with confirmation for deletion.
+- Shared optional body-weight, sleep, energy and digestion check-ins. Saving a check-in replaces that date's values; blanks remain unknown.
+- Eight-week body-weight graph: averages of recorded weights, with gaps for unrecorded weeks.
 
-GHOST, FUEL, expanded TRAINING, BOSS BATTLES preparation, CANON EVENTS, SIDE QUESTS, and CHRONICLES are deliberately not implemented. The Settings roadmap labels them as future modules; they are not pretend working features.
+Training is intentionally separate from Academy's original Study/Gym/Sport habits. It does not infer old workouts from a checked Academy habit or rewrite any saved Academy day.
 
-## Important starting settings
+## Fuel
 
-The default subjects are Pharmacology, Microbiology, and Pathology. The initial academic year starts **2 November 2026**. Its end date, **1 November 2027**, is an editable planning placeholder, not an official college date. The initial lecture target of **75%**, practical target of **80%**, and clinical default of **75%** are also editable placeholders: confirm your college's actual rules.
+- Breakfast, lunch, dinner and snack item logging, including unknown PG meals.
+- An offline reference set of 11 foods commonly available in India, with explicit household portion assumptions, calories, protein, fibre, calcium, iron, vitamin C and B12.
+- Eggs, glasses, bowls, plates, handfuls and packets; confirm that the portion matches before a quantity is estimated. Unknown quantities and nutrients stay unknown, never silently become zero.
+- Custom foods and favourite PG meals, with optional per-serving label/recipe nutrition. Saved meal snapshots stay independent of future food edits.
+- Editable protein planning target, dietary preference, food exclusions, weekly grocery budget, per-suggestion price limit and reliable shared-fridge access.
+- Known daily nutrition subtotals and weekly protein chart; incomplete data are labelled.
+- Seasonal fruit rotation, shopping checklist with editable estimated prices and explicit manual weekly reset.
+- MINI STASH inventory: shelf/fridge location, entered quantities and optional expiry/use-by dates. Expiry reminders are visible while ARC is open.
+- Body-weight graphs and optional energy/digestion check-ins shared with Training.
 
-There is **no invented timetable, attendance, posting department, rotation, or holiday date**. Add confirmed information in the app. The empty statistics display a dash rather than a false percentage.
+The PG menu starts unknown. A plate of mixed PG food is never assigned invented nutrition. Local recipes and milk types can differ from reference foods. Documentation, full food source table and reference limitations are included offline under GHOST's source details, and in [docs/NUTRITION_SOURCES.md](docs/NUTRITION_SOURCES.md).
 
-## Review the app on your computer
+## GHOST // NUTRI-Sense foundation
 
-Install the free **Node.js 22 LTS** or a newer supported version. Open a terminal in the `arc-life-os` folder and run these commands one at a time:
+An offline rule engine compares each supported nutrient separately. It considers an estimated gap only when the day is explicitly marked fully logged and every item has a known quantity and that nutrient. Otherwise it reports **insufficient data**. Adding, editing or deleting food reopens the day's completeness marker.
+
+Suggestions explain why a food could help. They filter by recorded gaps, diet, exclusions, reliable fridge access and entered budget estimates. Missing prices on purchased items prevent affordability recommendations. Each option fits individually; several combined may exceed the budget. Planning prices are examples, not live Warangal market quotes.
+
+Reference markers are general adult comparison points, not personalized requirements. A daily estimated gap cannot diagnose a medical deficiency, and meeting a reference does not establish adequacy. No expensive chatbot, internet nutrition API, account, telemetry or paid service is used. Nutrients beyond the documented set are not assessed.
+
+## Academy stays operational
+
+All existing Academy features remain available:
+
+- Today: timetable-generated or manual lectures, practicals and clinical sessions; independent Attended/Absent/Cancelled/Not recorded marks, original habits and notes; explicit SAVE DAY.
+- Separate subject/type and clinical department/rotation statistics, attendance register, CSV export and what-if simulator.
+- Monthly calendar, past-date correction and REWIND of the latest 100 day saves.
+- Configurable academic years, subjects, timetable effective dates, departments, rotations, holidays, cancellations and special working days.
+- Validated JSON backup/import, installation guidance and storage protection request.
+- Offline PWA shell, safe update prompt, standalone manifest and original install icons.
+
+Attendance remains `attended / (attended + absent) × 100`. Cancelled, unrecorded and unsaved days are excluded. Changing a schedule or subject name does not rewrite saved snapshots. Default academic dates and attendance targets are editable planning placeholders; confirm your college's rules. Default subjects remain Pharmacology, Microbiology and Pathology.
+
+## Local review — no deployment
+
+Use Node.js 22 LTS or a newer supported version:
 
 ```sh
 npm ci
-npm run dev
-```
-
-Open the Local address printed in the terminal, normally:
-
-```text
-http://localhost:5173/arc-life-os/
-```
-
-The development server is for editing. To try the **real offline production app**, stop the development server with Ctrl+C and run:
-
-```sh
-npm run build
-npm run preview
-```
-
-Open the address it prints, normally `http://localhost:4173/arc-life-os/`. Wait for **Offline ready**. Localhost supports service workers; an ordinary unencrypted LAN address does not. For your iPhone, use the HTTPS GitHub Pages link after publication.
-
-Development and preview use different ports and therefore have separate browser storage. Publishing also uses a different origin. Move records using JSON export/import.
-
-## Publish to your existing GitHub repository
-
-The project is prepared for `soul11seeker-rgb/arc-life-os`. Nothing in ARC uploads your attendance to GitHub. Publish the source code, not exported records.
-
-1. Review the changed files in your editor or GitHub Desktop. `src/` is the app, `tests/` and `e2e/` are automated checks, and `.github/workflows/deploy.yml` handles deployment.
-2. Save the changes in Git and publish your branch. If working from the original repository checkout, you can use:
-
-   ```sh
-   git switch -c arc-academy-1
-   git add .
-   git commit -m "Build ARC Academy 1.0 offline attendance PWA"
-   git push -u origin arc-academy-1
-   ```
-
-3. On GitHub, open a pull request from `arc-academy-1` into `main`. A pull request is a review page for the changes. The workflow runs tests and a build on the pull request. It does not deploy the pull request.
-4. In the repository, open **Settings → Pages → Build and deployment → Source**, and select **GitHub Actions**. Enable Actions for the repository if GitHub asks.
-5. Merge the pull request into `main`. The workflow tests, builds, runs real browser checks, and deploys. Open **Actions → Verify and deploy ARC Academy** to watch it. A green result means the workflow succeeded.
-6. Open the URL shown in the deployment result. With the current repository name, it should be:
-
-   ```text
-   https://soul11seeker-rgb.github.io/arc-life-os/
-   ```
-
-This is the **expected address after you deploy**, not a claim that it is already live. GitHub Pages should be free for a public repository under GitHub's current plan rules. No paid hosting service is used. If your default branch is not `main`, update the two branch entries in the workflow.
-
-If you later change the repository name or use a custom domain, update `VITE_BASE_PATH` in the workflow. It must begin and end with `/`; use `/` for a root custom-domain deployment. The manifest, assets, and worker scope use this base. Back up first: different origins have separate browser storage.
-
-## Install on your iPhone
-
-1. Open your published **HTTPS** address in Safari.
-2. Tap **Share → Add to Home Screen**. If shown, enable **Open as Web App**.
-3. Launch ARC from its new icon while connected. Wait for **Offline ready**.
-4. Turn on airplane mode. Reopen ARC, log a day, save, close, and reopen to check your record.
-
-An Apple Developer account and the App Store are not required. The browser tests emulate a 402 × 874 phone viewport in Chromium; they are not a physical iPhone/Safari certification. The steps above are the final real-device acceptance check.
-
-## Your first day
-
-1. In **Settings**, confirm your academic year dates and attendance targets.
-2. In **Timetable**, add each confirmed weekly lecture and practical. Add a separate slot for each session, including a second lecture of the same subject on the same weekday.
-3. If postings are announced, add departments and rotations in **Clinical**. Otherwise leave it empty.
-4. On **Today**, choose your date, mark the sessions, tick your activities, and press **SAVE DAY**. Changes are a draft until saving succeeds.
-5. Leave a class as **Not recorded** if you do not know its status. Do not mark it Absent to fill a gap.
-6. Export a JSON backup regularly, especially before changing devices or clearing browser data.
-
-You can add one-off sessions before your timetable is ready. For a one-off clinical session, select its department and optionally its rotation. Select the correct academic year in Settings (or the desktop header) before adding a one-off session for an older year.
-
-## How attendance works
-
-```text
-attendance = attended / (attended + absent) × 100
-```
-
-Only **saved** Attended and Absent sessions are eligible. Cancelled and Not recorded are excluded. Unsaved dates and passing days do not add absences. Zero eligible sessions means no percentage, displayed as `—`.
-
-Percentages are displayed to one decimal place, but target comparisons use the unrounded value. Lecture, practical, and clinical categories stay separate. Summary cards combine sessions within a category; each subject and posting still has its own requirement. The calendar's daily percentage combines session types for orientation and is not an eligibility decision.
-
-The simulator projects added attended/absent sessions without writing records. Recovery assumes all subsequent sessions are attended. A 100% target cannot be reached in a finite number of new sessions after an absence. Targets are session-based percentages; hour weighting, exam eligibility policies, and college-specific exceptions to the percentage formula are outside Academy 1.0.
-
-## Schedule changes and corrections
-
-A saved day stores a **snapshot** of each session's identity, academic year, original display name, time, type, rotation, and mark. Updating a timetable or renaming/archiving a subject does not rewrite saved history.
-
-To change a repeating schedule, end the old slot's effective date range and add another slot with its new dates. Unsaved days are generated from applicable year/date/weekday rules. The current year selector filters statistics and selects the year for configuration and manual additions. A daily checklist can retain sessions from any academic year scheduled on that date; changing the selector never discards those records.
-
-If you want an existing saved date to follow a new schedule or holiday, open it and choose **Rebuild from schedule**. This explicitly replaces the displayed sessions and marks, while keeping activities and notes. Nothing changes on disk until SAVE DAY. Navigation warns before discarding an unsaved draft.
-
-Closure rules (holiday/cancellation) win over special working-day rules. Among overlapping applicable closure rules, the last rule in the list supplies the cancellation reason. Among applicable working-day rules, the last rule supplies the replacement weekday. Working-day rules replace, rather than duplicate, the chosen day's schedule. Rotation date ranges and slot effective ranges still apply.
-
-Archiving a subject, department, slot, or rotation stops its new automatic session generation; saved records remain. Academic-year archiving is an organizational marker and does not delete historical schedules or records. You can still select archived years to inspect and correct their history.
-
-For ordinary corrections, open the date from Calendar or the register, edit, and save. Use **Settings → REWIND** to undo the latest save for that date. Its latest 100 saved revisions are available; this is not a replacement for backups.
-
-## Backup and privacy
-
-- **JSON export** contains all academic years, settings, configuration, attendance, activities, notes, exams, and retained Rewind history. Store it in Files or another location you control.
-- **JSON import** validates dates, percentages, identities, references, duplicate records, version, and session statuses before any write. Review the counts first. Restore replaces the complete local dataset; it does not merge. The restore button first initiates a download of your current dataset.
-- **CSV export** includes every saved session across all academic years, with subject/department, type, time, rotation/session label, status, and cancellation reason. It is suitable for a spreadsheet and is not a restore format. Formula-like cell content is escaped.
-- Data lives in **IndexedDB on this browser/origin**. No analytics, third-party fonts, remote APIs, accounts, or cloud synchronization are included. Public service-worker caches contain only app files.
-- Browser storage is not a guaranteed backup. Clearing site data, private browsing, storage eviction, or deleting the web app can remove records. Request persistent storage in Settings if available; the app reports the browser's actual answer.
-- Two tabs cannot silently overwrite each other's newer saved state. If a conflict is detected, your attempted save is rejected and the draft stays visible. Copy your unsaved note/marks before reloading and keep editing in one tab.
-- Do not put backup JSON/CSV files or screenshots containing personal records into the repository. `.gitignore` excludes generated backup/export names, `backups/`, dependencies, builds, local work, and test artifacts. It cannot protect a private file you manually rename and force-add.
-
-## Automated checks
-
-```sh
 npm test
 npm run build
 npx playwright install chromium
 npm run test:e2e
 ```
 
-For all checks after the browser is installed:
-
-```sh
-npm run check
-```
-
-If Chromium is already installed by your environment, point to it:
+If Chromium is already available in this Linux environment:
 
 ```sh
 ARC_CHROMIUM_PATH=/usr/bin/chromium npm run test:e2e
 ```
 
-On Windows, use the normal Playwright-installed browser instead of this Linux-specific command.
+To review the production build locally:
 
-The test suite includes:
-
-- Subject/type separation; repeated same-day sessions; clinical department and rotation totals.
-- Holiday ranges, targeted cancellations, special working days, date boundaries, and excluded unrecorded sessions.
-- Accurate calculations, recovery, what-if results, past-date edits, Rewind order, and future academic years.
-- IndexedDB save/reopen, JSON round trip, invalid backup rejection, migrations, stale-tab protection, and saving without network calls.
-- Service-worker shell caching, interrupted install, offline asset requests, scope isolation, update behavior, and old-cache cleanup.
-- React user flows for logging, reopen, date correction, clinical/timetable setup, and failed-save draft preservation.
-- Real production Chromium tests: service-worker installation, genuinely offline reload/save/reload, offline JSON restore and CSV download, mobile date correction/navigation, no horizontal overflow, and uncaught application errors.
-
-GitHub Actions installs Chromium and runs the same production browser checks after the build. Screenshots and traces use synthetic or empty records only and are ignored by Git.
-
-## Source map for later development
-
-```text
-src/domain/model.ts           Versioned data contracts, validation, seed, migrations
-src/domain/attendance.ts      Pure scheduling, calculations, snapshots, Rewind, CSV
-src/storage/db.ts             IndexedDB transactions, conflict detection, JSON/files
-src/components/DayView.tsx    Fast daily checklist and manual sessions
-src/components/AttendanceView.tsx  Statistics, register, simulator, calendar
-src/components/Manage.tsx     Configuration editors, clinical, timetable, date rules
-src/components/SettingsView.tsx    Years, subjects, backups, Rewind, roadmap
-src/components/ui.tsx         Shared panels, accessible native dialogs, branding
-src/App.tsx                   Navigation, drafts, saves, PWA lifecycle, app shell
-src/styles.css                Responsive original visual system
-scripts/build-sw.mjs          Precaches every production file with a content version
-scripts/sw-template.js        Offline shell, safe updates, scoped cache handling
-public/                       Manifest and original install icons
+```sh
+npm run preview
 ```
 
-The IndexedDB database version is **1**; the serialized application schema is **2**. These are intentionally different: the object-store layout has not changed, while the application schema supports a validated version-1-to-2 migration. Unknown future versions are rejected rather than reset. A failed validation, read, or write never silently wipes your dataset. An unreadable local database produces a recovery message instead of a new blank app.
+Open `http://localhost:4173/arc-life-os/`, wait for **Offline ready**, then disconnect the browser and test saving/reopening. `npm run dev` starts an editing server on a separate port. Ports and origins have separate storage. Do not use the existing production address as a feature-branch preview. An ordinary unencrypted LAN address does not provide PWA service workers on iPhone.
 
-For a future module, add its domain code and UI in a separate folder. If stored data changes, add a sequential migration in `parseState`, increment the schema version, preserve old fields and identities, and add migration/round-trip tests before exposing the feature. Do not connect future modules to public Git-tracked JSON files. Keep Academy calculations independent of future nutrition, companion, or entertainment features.
+Tests use synthetic data in isolated browser contexts. See [docs/POWER_UP_REVIEW.md](docs/POWER_UP_REVIEW.md) for verification results and the morning review checklist. Chromium phone emulation is not physical iPhone/Safari certification.
 
-**ARC // THE ORIGIN BEGINS.**
+The existing GitHub workflow verifies pull requests into main and does not deploy PRs. This branch does not change that workflow. Do not invoke a deployment workflow or merge the PR during review.
+
+## Data safety and compatibility
+
+The IndexedDB database is still **`arc-academy`, database version 1, object store `state`, key `main`**. No new store or destructive database upgrade is needed. The serialized application schema is now **3**, with pure sequential migrations **1 → 2 → 3**. The migration adds empty modules without converting Academy habit checkboxes or changing Academy snapshots, revisions or IDs.
+
+- Reads validate and migrate in memory; they do not overwrite stored legacy data. A later successful save writes the complete validated state in one atomic transaction.
+- Current-schema missing/damaged modules and unknown future schemas are rejected. Failures show recovery errors rather than a new blank app.
+- Saving validates both the proposed state and any existing record. Stale-tab conflicts, interrupted transactions and quota errors reject the write; drafts remain visible.
+- JSON export/import includes all Academy, Training and Fuel records, check-ins, custom foods, goals, preferences, pantry and shopping data.
+- Import validates before the review dialog and downloads a current backup before a confirmed replacement. Import replaces, rather than merges. An old Academy backup contains no Power-Up data; the review makes that consequence explicit.
+- Academy 1.0 cannot read schema-3 data/backups. Keep your original Academy JSON backup before trying 1.1. Review on localhost or a separate browser origin; do not replace your installed app during review.
+- Safari storage eviction, clearing website data, private browsing or deleting the app can remove local records. Keep downloaded private backups; persistent storage is best effort.
+- No record uploads, analytics, remote fonts or cloud synchronization. Service-worker caches hold app assets only. JSON/CSV files, local work, test artifacts and screenshots are ignored by Git. Never force-add personal records.
+
+## Code map
+
+| Path                                             | Responsibility                                                                     |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| `src/domain/model.ts`                            | Full state validation, initial Academy setup and sequential migrations             |
+| `src/domain/validation.ts`                       | Shared ISO-date validation                                                         |
+| `src/domain/attendance.ts`                       | Existing Academy scheduling, attendance, Rewind and CSV                            |
+| `src/domain/power.ts`                            | Training/Fuel schemas, weekly/monthly activity calculations, weight averages       |
+| `src/domain/nutrition.ts`                        | Offline food composition, estimates, GHOST rules, seasonal rotation, expiry labels |
+| `src/storage/db.ts`                              | Atomic IndexedDB storage, stale-tab guard, complete JSON backup/files              |
+| `src/components/TrainingView.tsx`                | Training dashboard, workout/goal editors                                           |
+| `src/components/FuelView.tsx`                    | Fuel dashboard, food/meal/preferences/pantry/shopping editors                      |
+| `src/components/PowerShared.tsx`                 | Draft tracking, save forms, module emblems, check-ins and weight chart             |
+| `src/components/SettingsView.tsx`                | Academy configuration and combined backup review                                   |
+| `src/App.tsx`                                    | App navigation, commit lifecycle, draft warnings and existing PWA lifecycle        |
+| `scripts/build-sw.mjs`, `scripts/sw-template.js` | Content-versioned app-shell precache and safe worker updates                       |
+
+Remaining future modules (BOSS BATTLES, CANON EVENTS, SIDE QUESTS and CHRONICLES) stay labelled as future. GHOST is a nutrition briefing foundation, not a general assistant.

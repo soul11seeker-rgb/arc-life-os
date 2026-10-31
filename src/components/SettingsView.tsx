@@ -435,24 +435,18 @@ export function SettingsView({
           title="One strong foundation"
         />
         <p className="muted">
-          Academy is active. The following modules are planned and have no
-          tracking features in this version.
+          Academy, Training and Fuel are active. The following modules are
+          planned and have no tracking features in this version.
         </p>
         <div className="future-modules">
-          {[
-            "GHOST",
-            "FUEL",
-            "TRAINING",
-            "BOSS BATTLES",
-            "CANON EVENTS",
-            "SIDE QUESTS",
-            "CHRONICLES",
-          ].map((m) => (
-            <span key={m}>
-              {m}
-              <small>FUTURE</small>
-            </span>
-          ))}
+          {["BOSS BATTLES", "CANON EVENTS", "SIDE QUESTS", "CHRONICLES"].map(
+            (m) => (
+              <span key={m}>
+                {m}
+                <small>FUTURE</small>
+              </span>
+            ),
+          )}
         </div>
       </Panel>
       {editor && (
@@ -474,11 +468,19 @@ export function SettingsView({
             <b>{restore.years.length} academic years</b>
             <b>{restore.subjects.length} subjects</b>
             <b>{restore.departments.length} departments</b>
+            <b>{restore.training.entries.length} Training logs</b>
+            <b>{restore.fuel.meals.length} meal items</b>
+            <b>{restore.training.wellness.length} body check-ins</b>
+            <b>{restore.fuel.foods.length} custom foods</b>
+            <b>{restore.fuel.pantry.length} stash items</b>
+            <b>{restore.fuel.shopping.length} shopping items</b>
           </div>
           <p className="muted">
-            Restoring replaces all data currently stored in this browser. A
-            backup of your current records will download first. Keep that file
-            in case you need to reverse the restore.
+            Restoring replaces Academy, Training and Fuel data currently stored
+            in this browser. Academy 1.0 backups contain no Training or Fuel
+            records; restoring them clears those modules after your
+            confirmation. A backup of your current records will download first.
+            Keep that file in case you need to reverse the restore.
           </p>
           <div className="dialog-actions">
             <button

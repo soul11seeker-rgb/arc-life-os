@@ -15,6 +15,8 @@ import {
   ShieldCheck,
   RefreshCw,
   AlertCircle,
+  Dumbbell,
+  Utensils,
 } from "lucide-react";
 import type { Day, State } from "./domain/model";
 import { today } from "./domain/model";
@@ -25,12 +27,17 @@ import { AttendanceView, CalendarView } from "./components/AttendanceView";
 import { ClinicalView, TimetableView } from "./components/Manage";
 import { SettingsView } from "./components/SettingsView";
 import { Dialog, Logo } from "./components/ui";
+import { TrainingView } from "./components/TrainingView";
+import { FuelView } from "./components/FuelView";
+import { PowerDraftScope } from "./components/PowerShared";
 const nav = [
   { name: "Today", icon: LayoutDashboard },
   { name: "Calendar", icon: CalendarDays },
   { name: "Attendance", icon: ChartNoAxesCombined },
   { name: "Clinical", icon: Stethoscope },
   { name: "Timetable", icon: CalendarRange },
+  { name: "Training", icon: Dumbbell },
+  { name: "Fuel", icon: Utensils },
   { name: "Settings", icon: Settings2 },
 ];
 export default function App() {
@@ -40,6 +47,7 @@ export default function App() {
   const [date, setDate] = useState(today());
   const [view, setView] = useState("Today");
   const [dirty, setDirty] = useState(false);
+  const [powerDirty, setPowerDirty] = useState(false);
   const [busy, setBusy] = useState(false);
   const saving = useRef(false);
   const [toast, setToast] = useState<{
@@ -66,14 +74,14 @@ export default function App() {
   }, []); // Initial device state is read once.
   useEffect(() => {
     const fn = (e: BeforeUnloadEvent) => {
-      if (dirty || saving.current) {
+      if (dirty || powerDirty || saving.current) {
         e.preventDefault();
         e.returnValue = "";
       }
     };
     window.addEventListener("beforeunload", fn);
     return () => window.removeEventListener("beforeunload", fn);
-  }, [dirty]);
+  }, [dirty, powerDirty]);
   useEffect(() => {
     if (!toast || toast.error) return;
     const t = setTimeout(() => setToast(null), 4500);
@@ -142,10 +150,8 @@ export default function App() {
   const discard = () => {
     if (saving.current) return false;
     if (
-      dirty &&
-      !confirm(
-        "You have unsaved changes to this day. Discard them and continue?",
-      )
+      (dirty || powerDirty) &&
+      !confirm("You have unsaved changes. Discard them and continue?")
     )
       return false;
     return true;
@@ -231,7 +237,7 @@ export default function App() {
           </button>
           <div className="sidebar-footer">
             <span>ARC PROTOCOL</span>
-            <b>V 1.0</b>
+            <b>V 1.1</b>
           </div>
         </div>
       </aside>
@@ -254,7 +260,13 @@ export default function App() {
             </button>
             <span className="topbar-arc">ARC</span>
             <span className="breadcrumb-slash">/</span>
-            <b>ACADEMY</b>
+            <b>
+              {view === "Training"
+                ? "TRAINING"
+                : view === "Fuel"
+                  ? "FUEL"
+                  : "ACADEMY"}
+            </b>
             <span className="desktop-only breadcrumb-detail">/ {view}</span>
           </div>
           <div className="topbar-right">
@@ -297,99 +309,105 @@ export default function App() {
             </div>
           </div>
         </header>
-        <main inert={busy} aria-busy={busy}>
-          {update && (
-            <div className="update-banner">
-              <RefreshCw size={17} />
-              <span>
-                An ARC update is ready. Save any changes before updating.
-              </span>
-              <button
-                className="text-button"
-                onClick={() => {
-                  if (!discard()) return;
-                  navigator.serviceWorker.addEventListener(
-                    "controllerchange",
-                    () => location.reload(),
-                    { once: true },
-                  );
-                  update.postMessage({ type: "SKIP_WAITING" });
-                }}
-              >
-                Update now
-              </button>
-            </div>
-          )}
-          {swError && (
-            <div className="info-strip error-text">
-              <AlertCircle size={18} />
-              <span>
-                Offline files could not be cached. Saving still works on this
-                device. Reload online before relying on airplane mode.
-              </span>
-            </div>
-          )}
-          {view === "Today" && (
-            <DayView
-              state={state}
-              day={day}
-              onChange={(next) => {
-                if (saving.current) return;
-                setDay(next);
-                setDirty(true);
-              }}
-              onDate={changeDate}
-              onSave={() =>
-                void commit(saveDay(state, day), "Day saved on this device")
-              }
-              onRefresh={() => {
-                if (
-                  confirm(
-                    "Rebuild this day from your current timetable? This replaces the displayed sessions and their marks. Activities and notes stay. Press SAVE DAY to apply, or navigate away to discard.",
-                  )
-                ) {
-                  setDay({
-                    ...day,
-                    sessions: generateDay(state, date).sessions,
-                  });
+        <PowerDraftScope onChange={setPowerDirty}>
+          <main inert={busy} aria-busy={busy}>
+            {update && (
+              <div className="update-banner">
+                <RefreshCw size={17} />
+                <span>
+                  An ARC update is ready. Save any changes before updating.
+                </span>
+                <button
+                  className="text-button"
+                  onClick={() => {
+                    if (!discard()) return;
+                    navigator.serviceWorker.addEventListener(
+                      "controllerchange",
+                      () => location.reload(),
+                      { once: true },
+                    );
+                    update.postMessage({ type: "SKIP_WAITING" });
+                  }}
+                >
+                  Update now
+                </button>
+              </div>
+            )}
+            {swError && (
+              <div className="info-strip error-text">
+                <AlertCircle size={18} />
+                <span>
+                  Offline files could not be cached. Saving still works on this
+                  device. Reload online before relying on airplane mode.
+                </span>
+              </div>
+            )}
+            {view === "Today" && (
+              <DayView
+                state={state}
+                day={day}
+                onChange={(next) => {
+                  if (saving.current) return;
+                  setDay(next);
                   setDirty(true);
+                }}
+                onDate={changeDate}
+                onSave={() =>
+                  void commit(saveDay(state, day), "Day saved on this device")
                 }
-              }}
-              dirty={dirty}
-              busy={busy}
-              onNavigate={navigate}
-            />
-          )}
-          {view === "Calendar" && (
-            <CalendarView
-              state={state}
-              onDate={changeDate}
-              initialDate={date}
-            />
-          )}
-          {view === "Attendance" && (
-            <AttendanceView state={state} onDate={changeDate} />
-          )}
-          {view === "Clinical" && (
-            <ClinicalView state={state} commit={commit} />
-          )}
-          {view === "Timetable" && (
-            <TimetableView state={state} commit={commit} />
-          )}
-          {view === "Settings" && (
-            <SettingsView
-              state={state}
-              commit={commit}
-              onInstall={() => setInstall(true)}
-            />
-          )}
-          <footer className="main-footer">
-            <span>
-              ARC <b>//</b> THE ORIGIN BEGINS.
-            </span>
-            <span>{year.name} · Local-first by design</span>
-          </footer>
-        </main>
+                onRefresh={() => {
+                  if (
+                    confirm(
+                      "Rebuild this day from your current timetable? This replaces the displayed sessions and their marks. Activities and notes stay. Press SAVE DAY to apply, or navigate away to discard.",
+                    )
+                  ) {
+                    setDay({
+                      ...day,
+                      sessions: generateDay(state, date).sessions,
+                    });
+                    setDirty(true);
+                  }
+                }}
+                dirty={dirty}
+                busy={busy}
+                onNavigate={navigate}
+              />
+            )}
+            {view === "Calendar" && (
+              <CalendarView
+                state={state}
+                onDate={changeDate}
+                initialDate={date}
+              />
+            )}
+            {view === "Attendance" && (
+              <AttendanceView state={state} onDate={changeDate} />
+            )}
+            {view === "Clinical" && (
+              <ClinicalView state={state} commit={commit} />
+            )}
+            {view === "Timetable" && (
+              <TimetableView state={state} commit={commit} />
+            )}
+            {view === "Training" && (
+              <TrainingView state={state} commit={commit} />
+            )}
+            {view === "Fuel" && <FuelView state={state} commit={commit} />}
+            {view === "Settings" && (
+              <SettingsView
+                state={state}
+                commit={commit}
+                onInstall={() => setInstall(true)}
+              />
+            )}
+            <footer className="main-footer">
+              <span>
+                ARC <b>//</b> THE ORIGIN BEGINS.
+              </span>
+              <span>{year.name} · Local-first by design</span>
+            </footer>
+          </main>
+        </PowerDraftScope>
       </div>
       <nav className="bottom-nav" aria-label="Quick navigation">
         {nav
@@ -408,7 +426,11 @@ export default function App() {
           ))}
         <button
           onClick={() => setMenu(true)}
-          className={["Settings", "Timetable"].includes(view) ? "active" : ""}
+          className={
+            ["Settings", "Timetable", "Training", "Fuel"].includes(view)
+              ? "active"
+              : ""
+          }
         >
           <Menu size={19} />
           <span>More</span>
@@ -437,7 +459,7 @@ export default function App() {
         >
           <div className="install-hero">
             <Logo />
-            <span>ACADEMY 1.0</span>
+            <span>ARC 1.1 · ACADEMY / TRAINING / FUEL</span>
           </div>
           <ol className="install-steps">
             <li>

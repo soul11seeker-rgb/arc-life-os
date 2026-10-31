@@ -428,7 +428,7 @@ describe("Exports and backup validation", () => {
       exams: undefined,
       revisions: undefined,
     };
-    expect(parseState(old).schemaVersion).toBe(2);
+    expect(parseState(old).schemaVersion).toBe(3);
     expect(() => parseState({ ...s, schemaVersion: 999 })).toThrow(
       /Unsupported/,
     );
