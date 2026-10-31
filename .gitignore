@@ -1,0 +1,13 @@
+node_modules/
+dist/
+work/
+*.tsbuildinfo
+.env*
+!.env.example
+backups/
+arc-backup*.json
+arc-attendance*.csv
+.DS_Store
+coverage/
+playwright-report/
+test-results/
