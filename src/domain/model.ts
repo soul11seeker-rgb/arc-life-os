@@ -1,13 +1,12 @@
 import { z } from "zod";
-export const dateSchema = z
-  .string()
-  .regex(/^\d{4}-\d{2}-\d{2}$/)
-  .refine(
-    (s) =>
-      !Number.isNaN(Date.parse(s)) &&
-      new Date(s).toISOString().slice(0, 10) === s,
-    "Use a valid date",
-  );
+import { dateSchema } from "./validation";
+export { dateSchema } from "./validation";
+import {
+  trainingSchema,
+  fuelSchema,
+  initialTraining,
+  initialFuel,
+} from "./power";
 const id = z.string().min(1).max(120);
 const name = z.string().trim().min(1).max(160);
 const time = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/);
@@ -120,7 +119,9 @@ export const revisionSchema = z.object({
 export const examSchema = z.object({ id, yearId: id, name, date: dateSchema });
 export const stateSchema = z
   .object({
-    schemaVersion: z.literal(2),
+    schemaVersion: z.literal(3),
+    training: trainingSchema,
+    fuel: fuelSchema,
     currentYearId: id,
     years: z.array(yearSchema).min(1),
     subjects: z.array(subjectSchema),
@@ -145,9 +146,21 @@ export const stateSchema = z
       s.exceptions,
       s.exams,
       s.revisions,
+      s.training.entries,
+      s.fuel.meals,
+      s.fuel.foods,
+      s.fuel.pantry,
+      s.fuel.shopping,
     ])
       if (new Set(list.map((x) => x.id)).size !== list.length)
         err("Duplicate IDs in backup");
+    if (
+      new Set(s.training.wellness.map((x) => x.date)).size !==
+      s.training.wellness.length
+    )
+      err("Duplicate wellness dates");
+    if (new Set(s.fuel.completeDays).size !== s.fuel.completeDays.length)
+      err("Duplicate complete food-log dates");
     const years = new Set(s.years.map((x) => x.id));
     const subjects = new Map(s.subjects.map((x) => [x.id, x]));
     const deps = new Set(s.departments.map((x) => x.id));
@@ -233,7 +246,9 @@ export const shiftDate = (date: string, n: number) => {
 };
 export function initialState(): State {
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
+    training: initialTraining(),
+    fuel: initialFuel(),
     currentYearId: "mbbs-2",
     years: [
       {
@@ -265,15 +280,24 @@ export function initialState(): State {
 export function parseState(input: unknown): State {
   if (typeof input !== "object" || !input)
     throw new Error("This is not an ARC backup.");
-  const value = input as Record<string, unknown>;
+  let value = { ...(input as Record<string, unknown>) };
+  // Pure sequential migrations: no database writes until the entire result validates.
   if (value.schemaVersion === 1)
-    return stateSchema.parse({
+    value = {
       ...value,
       schemaVersion: 2,
       exams: value.exams ?? [],
       revisions: value.revisions ?? [],
-    });
-  if (value.schemaVersion !== 2)
+    };
+  if (value.schemaVersion === 2)
+    value = {
+      ...value,
+      schemaVersion: 3,
+      training:
+        value.training === undefined ? initialTraining() : value.training,
+      fuel: value.fuel === undefined ? initialFuel() : value.fuel,
+    };
+  if (value.schemaVersion !== 3)
     throw new Error(
       "Unsupported backup version. Keep this file and update ARC before restoring it.",
     );
